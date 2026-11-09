@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ingestion Report</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --panel: #ffffff; --text: #1d1d1b; --muted: #66665f;
+    --border: #deded8; --accent: #2f5d8a; --bad: #a33a2b; --warn: #8a6100; --ok: #2e6b3a;
+    --chip: #eef1f5; --on-accent: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161615; --panel: #1f1f1d; --text: #ecece8; --muted: #a3a39b;
+      --border: #3a3a36; --accent: #8db8e3; --bad: #e88a7c; --warn: #e3bf6b; --ok: #8fcf9b;
+      --chip: #2a2e33; --on-accent: #10161d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body.dragging { outline: 3px dashed var(--accent); outline-offset: -8px; }
+  main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  .lead { color: var(--muted); margin: 0 0 20px; }
+  .button { display: inline-block; background: var(--accent); color: var(--on-accent); padding: 9px 16px;
+            border: 0; border-radius: 6px; cursor: pointer; font: inherit; font-weight: 600; }
+  .button input { display: none; }
+  #status { margin: 12px 0 24px; color: var(--muted); }
+  #status.error { color: var(--bad); }
+  .run { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+         padding: 16px; margin-bottom: 20px; min-width: 0; }
+  .result { font-size: 1.1rem; line-height: 1.4; margin: 0; }
+  .result.failed { color: var(--bad); }
+  .result.warned { color: var(--warn); }
+  .result.loaded { color: var(--ok); }
+  .meta { color: var(--muted); font-size: 0.9rem; margin: 4px 0 0; overflow-wrap: anywhere; }
+  h3 { font-size: 0.95rem; margin: 20px 0 6px; }
+  .side-by-side { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0 24px; }
+  .table-wrap { overflow-x: auto; max-width: 100%; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+  table.wide { min-width: 720px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  td.value { overflow-wrap: anywhere; min-width: 125px; }
+  tr.total td { font-weight: 700; border-top: 2px solid var(--border); }
+  .alarm { color: var(--bad); font-weight: 700; margin: 6px 0 0; }
+  .books { color: var(--muted); font-size: 0.88rem; margin: 6px 0 0; }
+  .group { border-top: 1px solid var(--border); padding: 8px 0; }
+  .group-title { font-weight: 600; }
+  .group-title .n { font-variant-numeric: tabular-nums; }
+  .group.decision .group-title { color: var(--bad); }
+  .group.lookup .group-title { color: var(--warn); }
+  .example { color: var(--muted); font-size: 0.9rem; margin: 2px 0; overflow-wrap: anywhere; }
+  a { color: var(--accent); }
+  details { margin-top: 4px; min-width: 0; }
+  summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+  .plain-list { margin: 0; padding-left: 18px; font-size: 0.9rem; }
+  .none { color: var(--muted); font-style: italic; margin: 4px 0; font-size: 0.9rem; }
+  .download { margin-top: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ingestion Report</h1>
+  <p class="lead">Runs of <code>ingest.py</code> from <code>ingestion-log.json</code>, newest first.</p>
+
+  <label class="button">Open ingestion-log.json
+    <input type="file" id="file" accept=".json,application/json">
+  </label>
+  <div id="status">No log opened yet. Choose the file, or drag it onto this page.</div>
+  <div id="runs"></div>
+</main>
+
+<script>
+  const esc = s => String(s ?? "").replace(/[&<>"']/g,
+    c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+  const num = n => Number(n ?? 0).toLocaleString();
+  const when = run => run.run_at ? new Date(run.run_at).toLocaleString() : "unknown time";
+
+  const COUNT_ROWS = [
+    ["loaded", "New books added"],
+    ["updated", "Books updated"],
+    ["skipped_already_exists", "Already loaded, nothing changed"],
+    ["rejected", "Rejected rows"],
+  ];
+  const STATUSES = ["ok", "repaired", "inferred", "rejected", "empty"];
+  const HANDLED_LABELS = {
+    isbn_values_repaired: "ISBN values repaired",
+    duplicate_rows_rejected: "duplicate row(s) rejected",
+    empty_values_ignored: "empty values ignored, stored values kept",
+  };
+
+  let currentRuns = [];
+
+  // ---- Problem list, for the table views and the CSV -------------------------
+
+  function warningsTable(rows) {
+    if (!rows.length) return "";
+    const body = rows.map(w => `<tr>
+        <td class="num">${w.line == null ? "earlier" : esc(w.line)}</td><td class="num">${esc(w.book_id)}</td>
+        <td>${esc(w.title)}</td><td>${esc(w.column)}</td><td class="value">${esc(w.value)}</td>
+        <td>${esc(w.reason)}</td><td>${esc(w.action)}</td></tr>`).join("");
+    return `<div class="table-wrap"><table class="wide">
+      <thead><tr><th>Line</th><th>book_id</th><th>Title</th><th>Column</th><th>Value</th><th>Reason</th><th>What to do</th></tr></thead>
+      <tbody>${body}</tbody></table></div>`;
+  }
+
+  function problemRows(run) {
+    const w = run.warnings || {};
+    const rows = [...(w.needs_decision || []), ...(w.needs_lookup || []), ...(w.check_this || [])]
+      .map(p => [p.book_id, p.title, p.column, p.value, p.reason, p.action]);
+    // Conflicting copies are already listed as warnings, so only add the other rejected rows.
+    const warnedLines = new Set((w.needs_decision || []).filter(p => p.book_key == null).map(p => p.line));
+    for (const r of run.not_loaded || []) {
+      if (r.outcome === "rejected" && !warnedLines.has(r.line)) {
+        const action = String(r.reason).startsWith("exact duplicate") ? "Nothing to do." : "Fix the row in the source file.";
+        rows.push([r.book_id, r.title, "", "", r.reason, action]);
+      }
+    }
+    return rows;
+  }
+
+  function csvCell(value) {
+    let text = String(value ?? "");
+    if (/^[=+@\t\r]/.test(text)) text = "'" + text;   // stops a spreadsheet running a value as a formula
+    return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  }
+
+  function downloadCsv(index) {
+    const run = currentRuns[index];
+    const lines = [["book_id", "title", "column", "original value", "reason", "suggested action"], ...problemRows(run)]
+      .map(row => row.map(csvCell).join(","));
+    const blob = new Blob(["﻿" + lines.join("\r\n") + "\r\n"], {type: "text/csv;charset=utf-8"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `problems-run-${index + 1}-${run.file || "log"}`.replace(/\.csv$/i, "") + ".csv";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  }
+
+  // ---- The sections of one run, in Rule 13's order ---------------------------
+
+  function countsHtml(run) {
+    const c = run.counts || {};
+    const total = COUNT_ROWS.reduce((sum, [key]) => sum + Number(c[key] ?? 0), 0);
+    const rows = COUNT_ROWS.map(([key, label]) => `<tr><td>${label}</td><td class="num">${num(c[key])}</td></tr>`).join("");
+    const alarm = total !== Number(c.read ?? 0)
+      ? `<p class="alarm">These don't add up: ${num(c.read)} rows read, ${num(total)} accounted for. Rows went missing without an error.</p>` : "";
+    const books = run.books_before == null ? "" : `<p class="books">Books: ${num(run.books_before)} &rarr; ${num(run.books_after)}</p>`;
+    return `<div><h3>Does every row add up?</h3>
+      <table><tbody>
+        <tr><td>Rows in the file</td><td class="num">${num(c.read)}</td></tr>${rows}
+        <tr class="total"><td>Total</td><td class="num">${num(total)}</td></tr>
+      </tbody></table>${alarm}${books}</div>`;
+  }
+
+  function statusHtml(run, previous) {
+    const now = run.isbn_status_counts || {};
+    const before = previous && previous.isbn_status_counts;
+    const cell = (counts, column, status) => counts ? num((counts[column] || {})[status]) : "&ndash;";
+    const rows = STATUSES.map(s => `<tr><td>${s}</td>
+        <td class="num">${cell(now, "isbn", s)}</td><td class="num">${cell(before, "isbn", s)}</td>
+        <td class="num">${cell(now, "isbn13", s)}</td><td class="num">${cell(before, "isbn13", s)}</td></tr>`).join("");
+    return `<div><h3>ISBN status, compared with the previous run</h3>
+      <table><thead><tr><th>Status</th><th class="num">isbn</th><th class="num">before</th><th class="num">isbn13</th><th class="num">before</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`;
+  }
+
+  function groupHtml(id, cls, title, count, unit, rows) {
+    if (!rows.length) return `<div class="group"><div class="group-title">${title}: 0</div></div>`;
+    const first = rows[0];
+    const name = first.title ? `${first.title}: ` : "";
+    return `<div class="group ${cls}">
+      <div class="group-title">${title}: <span class="n">${num(count)}</span> ${unit}</div>
+      <p class="example">For example, ${esc(name)}${esc(first.reason)}</p>
+      <a href="#${id}" class="show-list">See the full list (${num(rows.length)})</a>
+      <details id="${id}"><summary>Full list</summary>${warningsTable(rows)}</details>
+    </div>`;
+  }
+
+  function actionsHtml(run, n) {
+    const w = run.warnings || {};
+    const decisions = w.needs_decision || [], lookups = w.needs_lookup || [], checks = w.check_this || [];
+    const handled = Object.entries(w.handled_automatically || {})
+      .map(([key, value]) => `${num(value)} ${esc(HANDLED_LABELS[key] || key)}`).join(", ");
+    return `<h3>What to do</h3>
+      ${groupHtml(`run-${n}-decision`, "decision", "Needs a decision", w.decisions_needed ?? decisions.length, "to settle", decisions)}
+      ${groupHtml(`run-${n}-lookup`, "lookup", "Needs a lookup", lookups.length, "to find", lookups)}
+      ${groupHtml(`run-${n}-check`, "check", "Check this", checks.length, "to look over", checks)}
+      <div class="group"><div class="group-title">Handled automatically, nothing to do</div>
+        <p class="example">${handled ? handled + "." : "Nothing this run."}</p></div>`;
+  }
+
+  function changesHtml(run) {
+    const changes = run.changes || [];
+    if (!changes.length) return `<h3>What changed</h3><p class="none">No stored values changed.</p>`;
+    const rows = changes.flatMap(book => book.changes.map((c, i) => `<tr>
+        <td>${i === 0 ? esc(book.title) : ""}</td><td class="num">${i === 0 ? esc(book.book_id) : ""}</td>
+        <td>${esc(c.column)}</td><td class="value">${esc(c.old)}</td><td class="value">${esc(c.new)}</td></tr>`)).join("");
+    return `<h3>What changed</h3>
+      <details ${changes.length <= 10 ? "open" : ""}><summary>${num(changes.length)} updated ${changes.length === 1 ? "book" : "books"}</summary>
+      <div class="table-wrap"><table class="wide">
+        <thead><tr><th>Book</th><th>book_id</th><th>Column</th><th>Old</th><th>New</th></tr></thead>
+        <tbody>${rows}</tbody></table></div></details>`;
+  }
+
+  function rejectedHtml(run) {
+    const rows = (run.not_loaded || []).filter(r => r.outcome === "rejected");
+    if (!rows.length) return "";
+    const body = rows.map(r => `<tr><td class="num">${esc(r.line)}</td><td class="num">${esc(r.book_id)}</td>
+        <td>${esc(r.title)}</td><td>${esc(r.reason)}</td></tr>`).join("");
+    return `<h3>Rejected rows</h3><div class="table-wrap"><table class="wide">
+      <thead><tr><th>Line</th><th>book_id</th><th>Title</th><th>Reason</th></tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+
+  function detailsHtml(run, index) {
+    const assumptions = (run.assumptions || []).map(a => `<li>${esc(a)}</li>`).join("");
+    const size = run.file_size == null ? "unknown size" : `${num(run.file_size)} bytes`;
+    return `<h3>Assumptions</h3>
+      ${assumptions ? `<ul class="plain-list">${assumptions}</ul>` : `<p class="none">None recorded.</p>`}
+      <h3>How to fix a row</h3>
+      <p class="example">Fix it in the source file or a corrections file, then run the load again. Loading twice is safe, so there's no risk of duplicates.</p>
+      <h3>Where everything is</h3>
+      <p class="example">${esc(run.full_path || run.file_path)} (${size}), loaded ${esc(when(run))}.<br>SHA-256: ${esc(run.sha256 || "unknown")}</p>
+      <button type="button" class="button download" data-run="${index}">Download problem list as CSV (${num(problemRows(run).length)})</button>`;
+  }
+
+  function runHtml(run, index, previous) {
+    const n = index + 1;
+    const heading = `<p class="meta">Run ${n}: ${esc(run.file)} &middot; ${esc(when(run))}</p>`;
+    if (run.status === "failed") {
+      return `<section class="run">
+        <p class="result failed">${esc(run.result)}</p>${heading}
+        <p class="example">${esc(run.full_path || run.file_path)}</p></section>`;
+    }
+    if (!run.status) {
+      const c = run.counts || {};
+      return `<section class="run">
+        <p class="result">Logged by an older version of ingest.py: ${num(c.read)} rows read.</p>${heading}
+        <p class="none">This entry doesn't have the details this report shows.</p></section>`;
+    }
+    const cls = run.status === "loaded" ? "loaded" : "warned";
+    return `<section class="run">
+      <p class="result ${cls}">${esc(run.result)}</p>${heading}
+      <div class="side-by-side">${countsHtml(run)}${statusHtml(run, previous)}</div>
+      ${actionsHtml(run, n)}
+      ${changesHtml(run)}
+      ${rejectedHtml(run)}
+      ${detailsHtml(run, index)}
+    </section>`;
+  }
+
+  // ---- Opening the log (Decision 31) -----------------------------------------
+
+  function previousRun(runs, index) {
+    for (let i = index - 1; i >= 0; i--) {
+      if (runs[i].isbn_status_counts) return runs[i];
+    }
+    return null;
+  }
+
+  function openLog(file) {
+    const status = document.getElementById("status");
+    const out = document.getElementById("runs");
+    file.text().then(text => {
+      const runs = JSON.parse(text);
+      if (!Array.isArray(runs)) throw new Error("the file is not a list of runs");
+      currentRuns = runs;
+      status.className = "";
+      status.textContent = `${file.name}: ${runs.length} run${runs.length === 1 ? "" : "s"}, newest first.`;
+      out.innerHTML = runs.map((run, i) => runHtml(run, i, previousRun(runs, i))).reverse().join("");
+    }).catch(err => {
+      currentRuns = [];
+      status.className = "error";
+      status.textContent = `Couldn't read ${file.name}: ${err.message}`;
+      out.innerHTML = "";
+    });
+  }
+
+  document.getElementById("file").addEventListener("change", e => {
+    if (e.target.files[0]) openLog(e.target.files[0]);
+    e.target.value = "";   // so the same file can be opened again after another run
+  });
+
+  document.addEventListener("dragover", e => {
+    e.preventDefault();
+    document.body.classList.add("dragging");
+  });
+  document.addEventListener("dragleave", e => {
+    if (!e.relatedTarget) document.body.classList.remove("dragging");
+  });
+  document.addEventListener("drop", e => {
+    e.preventDefault();
+    document.body.classList.remove("dragging");
+    if (e.dataTransfer.files[0]) openLog(e.dataTransfer.files[0]);
+  });
+
+  document.getElementById("runs").addEventListener("click", e => {
+    const link = e.target.closest(".show-list");
+    if (link) {
+      document.getElementById(link.getAttribute("href").slice(1)).open = true;
+    }
+    const button = e.target.closest(".download");
+    if (button) downloadCsv(Number(button.dataset.run));
+  });
+</script>
+</body>
+</html>
