@@ -90,3 +90,19 @@ None.
 | تاكسي: حواديت المشاوير (work_id 2516225) | `isbn_row_status` | `"empty"` | `"rejected"` |
 | واحة الغروب (work_id 3275385) | `isbn13_status` | `"empty"` | `"rejected"` |
 | واحة الغروب (work_id 3275385) | `isbn_row_status` | `"empty"` | `"rejected"` |
+
+## Why our data differs
+
+My partner and I compared our databases separately and got the same result: the same 10,014 books, with 33 books differing in the same 58 values. Our `rules.md` files are identical, so the rule text itself isn't different. The differences come from places where our two `ingest.py` scripts handled something differently. Every cleaned ISBN and every rating count matches.
+
+| Difference | Books | Rule it comes from | What let it through |
+|---|---:|---|---|
+| Non-ISBN codes with no ISBN-10: my `isbn13_status` and `isbn_row_status` say `empty`, my partner's say `rejected` | 25 | Rule 6, Rule 8 and Decision 12, with examples 19 and 29 | **The rule.** Neither test suite could catch it |
+| UPCs written in scientific notation: my partner stored them in `other_id`, mine is empty | 3 | Decisions 10, 11 and 12 | **The rule**, then my code. The tests don't cover this form |
+| A title that is a single space: my partner stored it as empty, I kept the space | 5 | Database layout: "Stored as they arrived" | **My partner's code.** The tests don't cover it |
+
+**The 25 status differences.** These are values like Barnes & Noble IDs that get moved to `other_id` when the row has no ISBN-10 to calculate from. The rules never say what status a moved value gets. Rule 6 lists these codes as invalid, which points to `rejected`, and my partner's script used that. But the examples table only says "moved" and names no status, and the value isn't really a failed repair because it was kept in `other_id`, which is how my script ended up with `empty`. Both are reasonable readings. The tests couldn't catch it because they follow the examples table, and the table has no status to check. The fix belongs in the rule: say which status a moved value gets.
+
+**The 3 UPCs.** Books 2894, 3689 and 5268 have UPCs written like `6.45573003012e+11`. Decision 11 explains how to recognize a UPC, but only for values ending in `.0`. Decision 10 only covers 13-digit numbers in scientific notation. So no decision covers a 12-digit number in scientific notation. Decision 12 does say UPCs go in `other_id`, and my partner read that as covering this case. My script rejects scientific notation that isn't 13 digits, so the value never reached the UPC check. All three books have a valid ISBN-10, so the ISBN-13 still came out the same. The tests missed it because example 20, the only UPC example, ends in `.0`.
+
+**The 5 titles.** Books 3014, 6598, 7578, 7864 and 9280 have a single space as their `original_title` in `books.csv`. The rule here is clear: the database layout says these columns are stored as they arrived, and Decision 4 says columns other than the ISBNs aren't validated. My partner's script turns a value that's only spaces into an empty one, which no rule asked for, so this is a mistake in my partner's code and my value is the one that follows the rule. The tests let it through because neither suite loads a title made only of spaces.
