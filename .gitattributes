@@ -1,0 +1,3 @@
+# Keep the two deliveries exactly as they arrived: no line-ending conversion
+books.csv -text
+books-batch2.csv -text

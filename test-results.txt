@@ -1,0 +1,43 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.2.0, pluggy-1.7.0 -- C:\Users\Harlin Hickerson\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Harlin Hickerson\workspace\language-of-computation\week4-assignment
+collecting ... collected 35 items
+
+test_ingest.py::test_examples_table[01-goblet-of-fire] PASSED            [  2%]
+test_ingest.py::test_examples_table[02-prisoner-of-azkaban] PASSED       [  5%]
+test_ingest.py::test_examples_table[03-hunger-games-isbn] PASSED         [  8%]
+test_ingest.py::test_examples_table[04-to-kill-a-mockingbird] PASSED     [ 11%]
+test_ingest.py::test_examples_table[05-salt-and-ember] PASSED            [ 14%]
+test_ingest.py::test_examples_table[06-field-guide-to-quiet-places] PASSED [ 17%]
+test_ingest.py::test_examples_table[07-winter-orchard] PASSED            [ 20%]
+test_ingest.py::test_examples_table[08-atlas-of-small-kindnesses] PASSED [ 22%]
+test_ingest.py::test_examples_table[09-cartographers-error] PASSED       [ 25%]
+test_ingest.py::test_examples_table[11-the-racketeer] PASSED             [ 28%]
+test_ingest.py::test_examples_table[12-glass-aviary] PASSED              [ 31%]
+test_ingest.py::test_examples_table[13-borrowed-light] PASSED            [ 34%]
+test_ingest.py::test_examples_table[14-night-ferry] PASSED               [ 37%]
+test_ingest.py::test_examples_table[15-hunger-games-isbn13] PASSED       [ 40%]
+test_ingest.py::test_examples_table[16-how-to-win-friends] PASSED        [ 42%]
+test_ingest.py::test_examples_table[17-watchers] PASSED                  [ 45%]
+test_ingest.py::test_examples_table[18-nights-in-rodanthe] PASSED        [ 48%]
+test_ingest.py::test_examples_table[19-wait-for-you] PASSED              [ 51%]
+test_ingest.py::test_examples_table[20-anne-of-green-gables-box-set] PASSED [ 54%]
+test_ingest.py::test_examples_table[21-secret-of-the-nagas] PASSED       [ 57%]
+test_ingest.py::test_examples_table[22-bossypants] PASSED                [ 60%]
+test_ingest.py::test_examples_table[23-made-up-hyphens] PASSED           [ 62%]
+test_ingest.py::test_examples_table[24-made-up-wrong-check-digit] PASSED [ 65%]
+test_ingest.py::test_examples_table[25-made-up-fails-checksum] PASSED    [ 68%]
+test_ingest.py::test_examples_table[26-made-up-isbn-label] PASSED        [ 71%]
+test_ingest.py::test_examples_table[27-manual-urn-label] PASSED          [ 74%]
+test_ingest.py::test_examples_table[28-manual-format-label] PASSED       [ 77%]
+test_ingest.py::test_examples_table[29-made-up-ismn] PASSED              [ 80%]
+test_ingest.py::test_examples_table[30-made-up-price-code] PASSED        [ 82%]
+test_ingest.py::test_example_10_paper_moons_shares_angels_and_demons_isbn PASSED [ 85%]
+test_ingest.py::test_running_the_same_file_twice_creates_no_duplicates PASSED [ 88%]
+test_ingest.py::test_every_run_adds_a_log_entry_without_overwriting_earlier_ones PASSED [ 91%]
+test_ingest.py::test_a_failed_run_also_adds_a_log_entry PASSED           [ 94%]
+test_ingest.py::test_loaded_updated_skipped_and_rejected_add_up_to_rows_read PASSED [ 97%]
+test_ingest.py::test_same_file_on_an_empty_database_gives_the_same_database_both_times PASSED [100%]
+
+============================= 35 passed in 23.22s =============================

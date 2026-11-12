@@ -1,0 +1,1076 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.2.0, pluggy-1.7.0 -- C:\Users\Harlin Hickerson\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Harlin Hickerson\workspace\language-of-computation\week4-assignment
+collecting ... collected 35 items
+
+test_ingest.py::test_examples_table[01-goblet-of-fire] FAILED            [  2%]
+test_ingest.py::test_examples_table[02-prisoner-of-azkaban] FAILED       [  5%]
+test_ingest.py::test_examples_table[03-hunger-games-isbn] FAILED         [  8%]
+test_ingest.py::test_examples_table[04-to-kill-a-mockingbird] FAILED     [ 11%]
+test_ingest.py::test_examples_table[05-salt-and-ember] FAILED            [ 14%]
+test_ingest.py::test_examples_table[06-field-guide-to-quiet-places] FAILED [ 17%]
+test_ingest.py::test_examples_table[07-winter-orchard] FAILED            [ 20%]
+test_ingest.py::test_examples_table[08-atlas-of-small-kindnesses] FAILED [ 22%]
+test_ingest.py::test_examples_table[09-cartographers-error] FAILED       [ 25%]
+test_ingest.py::test_examples_table[11-the-racketeer] FAILED             [ 28%]
+test_ingest.py::test_examples_table[12-glass-aviary] FAILED              [ 31%]
+test_ingest.py::test_examples_table[13-borrowed-light] FAILED            [ 34%]
+test_ingest.py::test_examples_table[14-night-ferry] FAILED               [ 37%]
+test_ingest.py::test_examples_table[15-hunger-games-isbn13] FAILED       [ 40%]
+test_ingest.py::test_examples_table[16-how-to-win-friends] FAILED        [ 42%]
+test_ingest.py::test_examples_table[17-watchers] FAILED                  [ 45%]
+test_ingest.py::test_examples_table[18-nights-in-rodanthe] FAILED        [ 48%]
+test_ingest.py::test_examples_table[19-wait-for-you] FAILED              [ 51%]
+test_ingest.py::test_examples_table[20-anne-of-green-gables-box-set] FAILED [ 54%]
+test_ingest.py::test_examples_table[21-secret-of-the-nagas] FAILED       [ 57%]
+test_ingest.py::test_examples_table[22-bossypants] FAILED                [ 60%]
+test_ingest.py::test_examples_table[23-made-up-hyphens] FAILED           [ 62%]
+test_ingest.py::test_examples_table[24-made-up-wrong-check-digit] FAILED [ 65%]
+test_ingest.py::test_examples_table[25-made-up-fails-checksum] FAILED    [ 68%]
+test_ingest.py::test_examples_table[26-made-up-isbn-label] FAILED        [ 71%]
+test_ingest.py::test_examples_table[27-manual-urn-label] FAILED          [ 74%]
+test_ingest.py::test_examples_table[28-manual-format-label] FAILED       [ 77%]
+test_ingest.py::test_examples_table[29-made-up-ismn] FAILED              [ 80%]
+test_ingest.py::test_examples_table[30-made-up-price-code] FAILED        [ 82%]
+test_ingest.py::test_example_10_paper_moons_shares_angels_and_demons_isbn FAILED [ 85%]
+test_ingest.py::test_running_the_same_file_twice_creates_no_duplicates PASSED [ 88%]
+test_ingest.py::test_every_run_adds_a_log_entry_without_overwriting_earlier_ones PASSED [ 91%]
+test_ingest.py::test_a_failed_run_also_adds_a_log_entry FAILED           [ 94%]
+test_ingest.py::test_loaded_updated_skipped_and_rejected_add_up_to_rows_read PASSED [ 97%]
+test_ingest.py::test_same_file_on_an_empty_database_gives_the_same_database_both_times FAILED [100%]
+
+================================== FAILURES ===================================
+___________________ test_examples_table[01-goblet-of-fire] ____________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF80D70>
+example = Example(name='01-goblet-of-fire', isbn='0439139600', isbn13='9780439139601', expected={'isbn': '0439139600', 'isbn_status': 'ok', 'isbn_original': '0439139600'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '0439139600', 'isbn_status': 'ok', 'isbn_original': '0439139600'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn_status (Database layout)
+E           assert 'isbn_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+_________________ test_examples_table[02-prisoner-of-azkaban] _________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF80CE0>
+example = Example(name='02-prisoner-of-azkaban', isbn='043965548X', isbn13='9.78043965548e+12', expected={'isbn': '043965548X', 'isbn_status': 'ok', 'isbn_original': '043965548X'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '043965548X', 'isbn_status': 'ok', 'isbn_original': '043965548X'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn_status (Database layout)
+E           assert 'isbn_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+__________________ test_examples_table[03-hunger-games-isbn] __________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF83D40>
+example = Example(name='03-hunger-games-isbn', isbn='439023483', isbn13='9.78043902348e+12', expected={'isbn': '0439023483', 'isbn_status': 'repaired', 'isbn_original': '439023483'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '0439023483', 'isbn_status': 'repaired', 'isbn_original': '439023483'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn_status (Database layout)
+E           assert 'isbn_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+________________ test_examples_table[04-to-kill-a-mockingbird] ________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF82000>
+example = Example(name='04-to-kill-a-mockingbird', isbn='61120081', isbn13='9.78006112008e+12', expected={'isbn': '0061120081', 'isbn_status': 'repaired', 'isbn_original': '61120081'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '0061120081', 'isbn_status': 'repaired', 'isbn_original': '61120081'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn_status (Database layout)
+E           assert 'isbn_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+___________________ test_examples_table[05-salt-and-ember] ____________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF82FC0>
+example = Example(name='05-salt-and-ember', isbn='0-450-19827-8', isbn13='9780450198274', expected={'isbn': '0450198278', 'isbn_status': 'repaired', 'isbn_original': '0-450-19827-8'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '0450198278', 'isbn_status': 'repaired', 'isbn_original': '0-450-19827-8'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn: got '0-450-19827-8', expected '0450198278'
+E           assert '0-450-19827-8' == '0450198278'
+E             
+E             - 0450198278
+E             + 0-450-19827-8
+E             ?  +   +     +
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+_____________ test_examples_table[06-field-guide-to-quiet-places] _____________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA36E0>
+example = Example(name='06-field-guide-to-quiet-places', isbn=' 162 001 4750 ', isbn13='9781620014752', expected={'isbn': '1620014750', 'isbn_status': 'repaired', 'isbn_original': ' 162 001 4750 '}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '1620014750', 'isbn_status': 'repaired', 'isbn_original': ' 162 001 4750 '}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn: got '162 001 4750', expected '1620014750'
+E           assert '162 001 4750' == '1620014750'
+E             
+E             - 1620014750
+E             + 162 001 4750
+E             ?    +   +
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+___________________ test_examples_table[07-winter-orchard] ____________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA2C90>
+example = Example(name='07-winter-orchard', isbn='031200009x', isbn13='9780312000097', expected={'isbn': '031200009X', 'isbn_status': 'repaired', 'isbn_original': '031200009x'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '031200009X', 'isbn_status': 'repaired', 'isbn_original': '031200009x'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn_status (Database layout)
+E           assert 'isbn_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+______________ test_examples_table[08-atlas-of-small-kindnesses] ______________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA1CD0>
+example = Example(name='08-atlas-of-small-kindnesses', isbn='9781982147600', isbn13='', expected={'isbn': '1982147601', 'isbn13': '9781982147600', 'isbn_status': 'repaired', 'isbn_original': '9781982147600'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '1982147601', 'isbn13': '9781982147600', 'isbn_status': 'repaired', 'isbn_original': '9781982147600'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn: got '9781982147600', expected '1982147601'
+E           assert '9781982147600' == '1982147601'
+E             
+E             - 1982147601
+E             ?          ^
+E             + 9781982147600
+E             ? +++         ^
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+_________________ test_examples_table[09-cartographers-error] _________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA10A0>
+example = Example(name='09-cartographers-error', isbn='', isbn13='9780062398123', expected={'isbn': '0062398121', 'isbn_status': 'repaired'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '0062398121', 'isbn_status': 'repaired'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn_status (Database layout)
+E           assert 'isbn_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+____________________ test_examples_table[11-the-racketeer] ____________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA3170>
+example = Example(name='11-the-racketeer', isbn='385535144', isbn13='9.78038553514e+12', expected={'isbn': '', 'isbn_status': 'rejected', 'isbn_original': '385535144'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '', 'isbn_status': 'rejected', 'isbn_original': '385535144'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn: got '0385535144', expected ''
+E           assert '0385535144' == ''
+E             
+E             + 0385535144
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+____________________ test_examples_table[12-glass-aviary] _____________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA59A0>
+example = Example(name='12-glass-aviary', isbn='04390A3483', isbn13='', expected={'isbn': '', 'isbn_status': 'rejected', 'isbn_original': '04390A3483'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '', 'isbn_status': 'rejected', 'isbn_original': '04390A3483'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn: got '004390A3483', expected ''
+E           assert '004390A3483' == ''
+E             
+E             + 004390A3483
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+___________________ test_examples_table[13-borrowed-light] ____________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA3830>
+example = Example(name='13-borrowed-light', isbn='15287463097', isbn13='', expected={'isbn': '', 'isbn_status': 'rejected', 'isbn_original': '15287463097'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '', 'isbn_status': 'rejected', 'isbn_original': '15287463097'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn: got '15287463097', expected ''
+E           assert '15287463097' == ''
+E             
+E             + 15287463097
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+_____________________ test_examples_table[14-night-ferry] _____________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA3A10>
+example = Example(name='14-night-ferry', isbn='', isbn13='9798351220413', expected={'isbn13': '9798351220413', 'isbn13_status': 'ok', 'isbn': '', 'isbn13_original': '9798351220413'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '9798351220413', 'isbn13_status': 'ok', 'isbn': '', 'isbn13_original': '9798351220413'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn13_status (Database layout)
+E           assert 'isbn13_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+_________________ test_examples_table[15-hunger-games-isbn13] _________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA2150>
+example = Example(name='15-hunger-games-isbn13', isbn='439023483', isbn13='9.78043902348e+12', expected={'isbn13': '9780439023481', 'isbn13_status': 'repaired', 'isbn13_original': '9.78043902348e+12'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '9780439023481', 'isbn13_status': 'repaired', 'isbn13_original': '9.78043902348e+12'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn13_status (Database layout)
+E           assert 'isbn13_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+_________________ test_examples_table[16-how-to-win-friends] __________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA0F50>
+example = Example(name='16-how-to-win-friends', isbn='', isbn13='9.78067172365e+12', expected={'isbn13': '9780671723651', 'isbn13_status': 'inferred', 'isbn13_original': '9.78067172365e+12'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '9780671723651', 'isbn13_status': 'inferred', 'isbn13_original': '9.78067172365e+12'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn13: got '', expected '9780671723651'
+E           assert '' == '9780671723651'
+E             
+E             - 9780671723651
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+______________________ test_examples_table[17-watchers] _______________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF81C70>
+example = Example(name='17-watchers', isbn='', isbn13='9.7804251888e+12', expected={'isbn13': '', 'isbn13_status': 'rejected', 'isbn13_original': '9.7804251888e+12'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '', 'isbn13_status': 'rejected', 'isbn13_original': '9.7804251888e+12'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn13_status (Database layout)
+E           assert 'isbn13_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+_________________ test_examples_table[18-nights-in-rodanthe] __________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF834D0>
+example = Example(name='18-nights-in-rodanthe', isbn='446612707', isbn13='9.78055381395e+12', expected={'isbn13': '9780446612708', 'isbn13_status': 'repaired', 'isbn13_original': '9.78055381395e+12'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '9780446612708', 'isbn13_status': 'repaired', 'isbn13_original': '9.78055381395e+12'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn13_status (Database layout)
+E           assert 'isbn13_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+____________________ test_examples_table[19-wait-for-you] _____________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF835F0>
+example = Example(name='19-wait-for-you', isbn='', isbn13='2.94001623192e+12', expected={'isbn13': '', 'other_id': '2.94001623192e+12', 'isbn13_original': '2.94001623192e+12'}, warned=None)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '', 'other_id': '2.94001623192e+12', 'isbn13_original': '2.94001623192e+12'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named other_id (Database layout)
+E           assert 'other_id' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+____________ test_examples_table[20-anne-of-green-gables-box-set] _____________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF817C0>
+example = Example(name='20-anne-of-green-gables-box-set', isbn='553609416', isbn13='76783609419.0', expected={'isbn13': '9780553609417', 'isbn13_status': 'repaired', 'other_id': '076783609419', 'isbn13_original': '76783609419.0'}, warned=None)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '9780553609417', 'isbn13_status': 'repaired', 'other_id': '076783609419', 'isbn13_original': '76783609419.0'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn13_status (Database layout)
+E           assert 'isbn13_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+_________________ test_examples_table[21-secret-of-the-nagas] _________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA66F0>
+example = Example(name='21-secret-of-the-nagas', isbn='9380658797', isbn13='97893806587.0', expected={'isbn13': '', 'isbn13_status': 'rejected', 'isbn13_original': '97893806587.0'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '', 'isbn13_status': 'rejected', 'isbn13_original': '97893806587.0'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn13: got '97893806587.0', expected ''
+E           assert '97893806587.0' == ''
+E             
+E             + 97893806587.0
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+_____________________ test_examples_table[22-bossypants] ______________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA7920>
+example = Example(name='22-bossypants', isbn='', isbn13='', expected={'isbn': '', 'isbn13': '', 'isbn_status': 'empty', 'isbn13_status': 'empty'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '', 'isbn13': '', 'isbn_status': 'empty', 'isbn13_status': 'empty'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn_status (Database layout)
+E           assert 'isbn_status' in {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+___________________ test_examples_table[23-made-up-hyphens] ___________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA4980>
+example = Example(name='23-made-up-hyphens', isbn='', isbn13='978-0-306-40615-7', expected={'isbn13': '9780306406157', 'isbn13_status': 'repaired', 'isbn13_original': '978-0-306-40615-7'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '9780306406157', 'isbn13_status': 'repaired', 'isbn13_original': '978-0-306-40615-7'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn13: got '978-0-306-40615-7', expected '9780306406157'
+E           assert '978-0-306-40615-7' == '9780306406157'
+E             
+E             - 9780306406157
+E             + 978-0-306-40615-7
+E             ?    + +   +     +
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+______________ test_examples_table[24-made-up-wrong-check-digit] ______________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978D832BD0>
+example = Example(name='24-made-up-wrong-check-digit', isbn='', isbn13='9780306406158', expected={'isbn13': '', 'isbn13_status': 'rejected', 'isbn13_original': '9780306406158'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '', 'isbn13_status': 'rejected', 'isbn13_original': '9780306406158'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn13: got '9780306406158', expected ''
+E           assert '9780306406158' == ''
+E             
+E             + 9780306406158
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+_______________ test_examples_table[25-made-up-fails-checksum] ________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA6450>
+example = Example(name='25-made-up-fails-checksum', isbn='1234567890', isbn13='', expected={'isbn': '', 'isbn_status': 'rejected', 'isbn_original': '1234567890'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '', 'isbn_status': 'rejected', 'isbn_original': '1234567890'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn: got '1234567890', expected ''
+E           assert '1234567890' == ''
+E             
+E             + 1234567890
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+_________________ test_examples_table[26-made-up-isbn-label] __________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA60C0>
+example = Example(name='26-made-up-isbn-label', isbn='ISBN 0-306-40615-2', isbn13='', expected={'isbn': '0306406152', 'isbn_status': 'repaired', 'isbn_original': 'ISBN 0-306-40615-2'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn': '0306406152', 'isbn_status': 'repaired', 'isbn_original': 'ISBN 0-306-40615-2'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn: got 'ISBN 0-306-40615-2', expected '0306406152'
+E           assert 'ISBN 0-306-40615-2' == '0306406152'
+E             
+E             - 0306406152
+E             + ISBN 0-306-40615-2
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+__________________ test_examples_table[27-manual-urn-label] ___________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA7860>
+example = Example(name='27-manual-urn-label', isbn='', isbn13='URN:ISBN:978-92-95055-12-4', expected={'isbn13': '9789295055124', 'isbn13_status': 'repaired', 'isbn13_original': 'URN:ISBN:978-92-95055-12-4'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '9789295055124', 'isbn13_status': 'repaired', 'isbn13_original': 'URN:ISBN:978-92-95055-12-4'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn13: got 'URN:ISBN:978-92-95055-12-4', expected '9789295055124'
+E           assert 'URN:ISBN:978-92-95055-12-4' == '9789295055124'
+E             
+E             - 9789295055124
+E             + URN:ISBN:978-92-95055-12-4
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+_________________ test_examples_table[28-manual-format-label] _________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF81790>
+example = Example(name='28-manual-format-label', isbn='', isbn13='ISBN 978-951-45-9693-3 (hardback)', expected={'isbn13': '9789514596933', 'isbn13_status': 'repaired', 'isbn13_original': 'ISBN 978-951-45-9693-3 (hardback)'}, warned=False)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '9789514596933', 'isbn13_status': 'repaired', 'isbn13_original': 'ISBN 978-951-45-9693-3 (hardback)'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn13: got 'ISBN 978-951-45-9693-3 (hardback)', expected '9789514596933'
+E           assert 'ISBN 978-951...-3 (hardback)' == '9789514596933'
+E             
+E             - 9789514596933
+E             + ISBN 978-951-45-9693-3 (hardback)
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+____________________ test_examples_table[29-made-up-ismn] _____________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF83B30>
+example = Example(name='29-made-up-ismn', isbn='', isbn13='9790007672393', expected={'isbn13': '', 'other_id': '9790007672393', 'isbn13_original': '9790007672393'}, warned=None)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '', 'other_id': '9790007672393', 'isbn13_original': '9790007672393'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn13: got '9790007672393', expected ''
+E           assert '9790007672393' == ''
+E             
+E             + 9790007672393
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 0
+Logged to test-ingestion-log.json
+_________________ test_examples_table[30-made-up-price-code] __________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CF81460>
+example = Example(name='30-made-up-price-code', isbn='', isbn13='978-92-95055-12-4 90000', expected={'isbn13': '', 'isbn13_status': 'rejected', 'isbn13_original': '978-92-95055-12-4 90000'}, warned=True)
+
+    @pytest.mark.parametrize("example", EXAMPLES, ids=lambda e: e.name)
+    def test_examples_table(sandbox, example):
+        sandbox.run(sandbox.write_csv([book_row(example.name, example.isbn, example.isbn13)]))
+    
+        books = sandbox.rows("books")
+        assert len(books) == 1, "A bad ISBN must not stop the book from loading (Rule 8)"
+>       check_columns(books[0], example.expected)
+
+test_ingest.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 1, 'goodreads_book_id': '1001', 'best_book_id': '1001', 'work_id': '2001', ...}
+expected = {'isbn13': '', 'isbn13_status': 'rejected', 'isbn13_original': '978-92-95055-12-4 90000'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+            assert column in book, f"books has no column named {column} (Database layout)"
+            # rules.md says "empty" without choosing between NULL and blank text.
+>           assert (book[column] or "") == value, f"{column}: got {book[column]!r}, expected {value!r}"
+E           AssertionError: isbn13: got '978-92-95055-12-4 90000', expected ''
+E           assert '978-92-95055-12-4 90000' == ''
+E             
+E             + 978-92-95055-12-4 90000
+
+test_ingest.py:256: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 1, loaded 1, updated 0, skipped (already exist) 0, rejected 0, flagged 1
+Logged to test-ingestion-log.json
+__________ test_example_10_paper_moons_shares_angels_and_demons_isbn __________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA1490>
+
+    def test_example_10_paper_moons_shares_angels_and_demons_isbn(sandbox):
+        """Valid, but it's also Angels & Demons' ISBN, so both rows get a warning (Rule 7)."""
+        sandbox.run(sandbox.write_csv([
+            book_row("Angels & Demons", "1416524797", "9.78141652479e+12", number=1),
+            book_row("Paper Moons", "1416524797", "", number=2),
+        ]))
+    
+        books = {book["title"]: book for book in sandbox.rows("books")}
+        assert len(books) == 2, "Both books must load"
+>       check_columns(books["Paper Moons"], {
+            "isbn": "1416524797", "isbn_status": "ok", "isbn_original": "1416524797"})
+
+test_ingest.py:286: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+book = {'book_id': 2, 'goodreads_book_id': '1002', 'best_book_id': '1002', 'work_id': '2002', ...}
+expected = {'isbn': '1416524797', 'isbn_status': 'ok', 'isbn_original': '1416524797'}
+
+    def check_columns(book, expected):
+        for column, value in expected.items():
+>           assert column in book, f"books has no column named {column} (Database layout)"
+E           AssertionError: books has no column named isbn_status (Database layout)
+E           assert 'isbn_status' in {'book_id': 2, 'goodreads_book_id': '1002', 'best_book_id': '1002', 'work_id': '2002', ...}
+
+test_ingest.py:254: AssertionError
+---------------------------- Captured stdout call -----------------------------
+input.csv: read 2, loaded 2, updated 0, skipped (already exist) 0, rejected 0, flagged 2
+Logged to test-ingestion-log.json
+___________________ test_a_failed_run_also_adds_a_log_entry ___________________
+
+sandbox = <test_ingest.Sandbox object at 0x000001978CFA3A40>
+
+    def test_a_failed_run_also_adds_a_log_entry(sandbox):
+        """Decision 4: a missing file fails the run, and failed runs get a log entry."""
+        sandbox.run(BATCH2)
+        after_first = sandbox.log_entries()
+    
+        sandbox.run_expecting_failure(sandbox.folder / "this-file-does-not-exist.csv")
+        after_failure = sandbox.log_entries()
+>       assert len(after_failure) == 2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = len([{'run_at': '2026-11-11T18:03:59-06:00', 'file': 'books-batch2.csv', 'file_path': 'C:\\Users\\Harlin Hickerson\\workspace\\language-of-computation\\week4-assignment\\books-batch2.csv', 'database': 'test.db', ...}])
+
+test_ingest.py:332: AssertionError
+---------------------------- Captured stdout call -----------------------------
+books-batch2.csv: read 31, loaded 30, updated 0, skipped (already exist) 1, rejected 0, flagged 9
+Logged to test-ingestion-log.json
+___ test_same_file_on_an_empty_database_gives_the_same_database_both_times ____
+
+sandbox = <test_ingest.Sandbox object at 0x000001978D833590>
+
+    def test_same_file_on_an_empty_database_gives_the_same_database_both_times(sandbox):
+        sandbox.run(BATCH2)
+>       first = database_contents(sandbox)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_ingest.py:376: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+test_ingest.py:370: in database_contents
+    return {table: sorted(json.dumps(row, sort_keys=True) for row in sandbox.rows(table))
+                                                                     ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_ingest.Sandbox object at 0x000001978D833590>
+table = 'book_sources'
+
+    def rows(self, table):
+        connection = self.connect(self.db)
+        connection.row_factory = sqlite3.Row
+        try:
+>           return [dict(row) for row in connection.execute(f"SELECT * FROM {table}")]
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           sqlite3.OperationalError: no such table: book_sources
+
+test_ingest.py:120: OperationalError
+---------------------------- Captured stdout call -----------------------------
+books-batch2.csv: read 31, loaded 30, updated 0, skipped (already exist) 1, rejected 0, flagged 9
+Logged to test-ingestion-log.json
+=========================== short test summary info ===========================
+FAILED test_ingest.py::test_examples_table[01-goblet-of-fire] - AssertionErro...
+FAILED test_ingest.py::test_examples_table[02-prisoner-of-azkaban] - Assertio...
+FAILED test_ingest.py::test_examples_table[03-hunger-games-isbn] - AssertionE...
+FAILED test_ingest.py::test_examples_table[04-to-kill-a-mockingbird] - Assert...
+FAILED test_ingest.py::test_examples_table[05-salt-and-ember] - AssertionErro...
+FAILED test_ingest.py::test_examples_table[06-field-guide-to-quiet-places] - ...
+FAILED test_ingest.py::test_examples_table[07-winter-orchard] - AssertionErro...
+FAILED test_ingest.py::test_examples_table[08-atlas-of-small-kindnesses] - As...
+FAILED test_ingest.py::test_examples_table[09-cartographers-error] - Assertio...
+FAILED test_ingest.py::test_examples_table[11-the-racketeer] - AssertionError...
+FAILED test_ingest.py::test_examples_table[12-glass-aviary] - AssertionError:...
+FAILED test_ingest.py::test_examples_table[13-borrowed-light] - AssertionErro...
+FAILED test_ingest.py::test_examples_table[14-night-ferry] - AssertionError: ...
+FAILED test_ingest.py::test_examples_table[15-hunger-games-isbn13] - Assertio...
+FAILED test_ingest.py::test_examples_table[16-how-to-win-friends] - Assertion...
+FAILED test_ingest.py::test_examples_table[17-watchers] - AssertionError: boo...
+FAILED test_ingest.py::test_examples_table[18-nights-in-rodanthe] - Assertion...
+FAILED test_ingest.py::test_examples_table[19-wait-for-you] - AssertionError:...
+FAILED test_ingest.py::test_examples_table[20-anne-of-green-gables-box-set]
+FAILED test_ingest.py::test_examples_table[21-secret-of-the-nagas] - Assertio...
+FAILED test_ingest.py::test_examples_table[22-bossypants] - AssertionError: b...
+FAILED test_ingest.py::test_examples_table[23-made-up-hyphens] - AssertionErr...
+FAILED test_ingest.py::test_examples_table[24-made-up-wrong-check-digit] - As...
+FAILED test_ingest.py::test_examples_table[25-made-up-fails-checksum] - Asser...
+FAILED test_ingest.py::test_examples_table[26-made-up-isbn-label] - Assertion...
+FAILED test_ingest.py::test_examples_table[27-manual-urn-label] - AssertionEr...
+FAILED test_ingest.py::test_examples_table[28-manual-format-label] - Assertio...
+FAILED test_ingest.py::test_examples_table[29-made-up-ismn] - AssertionError:...
+FAILED test_ingest.py::test_examples_table[30-made-up-price-code] - Assertion...
+FAILED test_ingest.py::test_example_10_paper_moons_shares_angels_and_demons_isbn
+FAILED test_ingest.py::test_a_failed_run_also_adds_a_log_entry - AssertionErr...
+FAILED test_ingest.py::test_same_file_on_an_empty_database_gives_the_same_database_both_times
+======================== 32 failed, 3 passed in 6.62s =========================
